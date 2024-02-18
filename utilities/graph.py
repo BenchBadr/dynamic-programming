@@ -1,14 +1,18 @@
 import numpy as np
+from queue import Queue
 from stack import Stack
 
 class Graph:
-    def __init__(self, num_vertices):
-        self.num_vertices = num_vertices
-        self.adj_matrix = np.zeros((num_vertices, num_vertices), dtype=np.int32)
+    def __init__(self):
+        self.adj_matrix = np.zeros((1,1), dtype=np.int32)
 
     def add_edge(self, v1, v2):
         v1, v2 = (ord(v.lower())  - ord('a') for v in (v1, v2))
-        print(v1, v2)
+        order = self.adj_matrix.shape[0]
+        print(max(v1, v2), order)
+        if max(v1, v2) > order-1:
+            self.adj_matrix = np.column_stack((self.adj_matrix, np.zeros((order,1), dtype=np.int32)))
+            self.adj_matrix = np.vstack((self.adj_matrix, np.zeros((1,order+1), dtype=np.int32)))
         self.adj_matrix[v1][v2] = 1
         self.adj_matrix[v2][v1] = 1
 
@@ -31,18 +35,49 @@ class Graph:
         return [chr(ord('a')+index) for index, node in enumerate(self.adj_matrix[v]) if node==1]
 
     def bfs(self):
-        s = Stack()
-        visited = ['a']
-        s.push('a')
+        s = Queue()
+        x = 'a'
+        visited = [x]
+        s.enqueue(x)
+        out = []
+
         while not s.is_empty():
-            pass
+            x = s.dequeue()
+            out.append(x.upper())
+            neigh = self.get_neigh(x)
+            for n in neigh:
+                if n not in visited:
+                    visited.append(n)
+                    s.enqueue(n)
+
+        return out
+    
+    def dfs(self):
+        s = Stack()
+        x = 'a'
+        visited = [x]
+        s.enqueue(x)
+        out = []
+
+        while not s.is_empty():
+            x = s.dequeue()
+            out.append(x.upper())
+            neigh = self.get_neigh(x)
+            for n in neigh:
+                if n not in visited:
+                    visited.append(n)
+                    s.enqueue(n)
+
+        return out       
 
     
 if __name__ == "__main__":
-    graph = Graph(5)
+    graph = Graph()
 
     graph.add_edge('A', 'B')
     graph.add_edge('A', 'C')
+    graph.add_edge('C','D')
+    graph.add_edge('C','E')
 
 
     print(graph)
@@ -51,3 +86,7 @@ if __name__ == "__main__":
     print(graph.get_degree('b'))
     print(graph.edge_numbers())
     print(graph.get_neigh('A'))
+
+    print('-'*20)
+
+    print(graph.bfs())
