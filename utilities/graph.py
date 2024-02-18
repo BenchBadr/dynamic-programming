@@ -9,7 +9,7 @@ class Graph:
     def add_edge(self, v1, v2):
         v1, v2 = (ord(v.lower())  - ord('a') for v in (v1, v2))
         order = self.adj_matrix.shape[0]
-        print(max(v1, v2), order)
+        print(max(v1, v2), order)9
         if max(v1, v2) > order-1:
             self.adj_matrix = np.column_stack((self.adj_matrix, np.zeros((order,1), dtype=np.int32)))
             self.adj_matrix = np.vstack((self.adj_matrix, np.zeros((1,order+1), dtype=np.int32)))
@@ -56,17 +56,17 @@ class Graph:
         s = Stack()
         x = 'a'
         visited = [x]
-        s.enqueue(x)
+        s.push(x)
         out = []
 
         while not s.is_empty():
-            x = s.dequeue()
+            x = s.pop()
             out.append(x.upper())
             neigh = self.get_neigh(x)
-            for n in neigh:
+            for n in neigh[::-1]:
                 if n not in visited:
                     visited.append(n)
-                    s.enqueue(n)
+                    s.push(n)
 
         return out       
 
@@ -75,6 +75,7 @@ if __name__ == "__main__":
     graph = Graph()
 
     graph.add_edge('A', 'B')
+    graph.add_edge('B', 'F')
     graph.add_edge('A', 'C')
     graph.add_edge('C','D')
     graph.add_edge('C','E')
@@ -90,3 +91,4 @@ if __name__ == "__main__":
     print('-'*20)
 
     print(graph.bfs())
+    print(graph.dfs())
