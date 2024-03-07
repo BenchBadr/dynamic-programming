@@ -9,14 +9,14 @@ class Graph:
     def add_edge(self, v1, v2, d = 1):
         order = len(self.adj_matrix)
         if max(v1, v2) > order-1:
-            self.adj_matrix = [n+[0]*(max(v1,v2)-order+1) for n in self.adj_matrix]+[[0]*(max(v1,v2)+1) for i in range(max(v1,v2))]
+            self.adj_matrix = [n+[0]*(max(v1,v2)-order+1) for n in self.adj_matrix]+[[0]*(max(v1,v2)+1) for _ in range(max(v1,v2)-order+1)]
         self.adj_matrix[v1][v2] = d
         # matrix is not symmetrical (oriented)
         #self.adj_matrix[v2][v1] = d
 
     def remove_edge(self, v1, v2):
         self.adj_matrix[v1][v2] = 0
-        self.adj_matrix[v2][v1] = 0
+        # self.adj_matrix[v2][v1] = 0
 
     def __str__(self):
         return str(self.adj_matrix)
@@ -65,28 +65,33 @@ class Graph:
                     s.push(n)
 
         return out
+    
+    def dijkstra(self, start, end):
+        num_vertices = len(self.adj_matrix)
+        visited = [False] * num_vertices
+        distances = [-1] * num_vertices
+
+        q = Queue()
+        q.enqueue(start)
+        distances[start] = 0
+
+        while not q.is_empty():
+            current_vertex = q.dequeue()
+            if current_vertex == end:
+                break
+
+            for neighbor in self.get_neigh(current_vertex):
+                if not visited[neighbor]:
+                    q.enqueue(neighbor)
+                    visited[neighbor] = True
+                    distances[neighbor] = distances[current_vertex] + 1
+
+        return distances[end]
 
     
 if __name__ == "__main__":
     graph = Graph()
 
-    graph.add_edge(0,1)
-    print(graph.bfs())
-    # graph.add_edge('B', 'F')
-    # graph.add_edge('A', 'C')
-    # graph.add_edge('C','D')
-    # graph.add_edge('C','E')
-
-
-    # print(graph)
-
-    # print(graph.get_degree('a'))
-    # print(graph.get_degree('b'))
-    # print(graph.edge_numbers())
-    # print(graph.get_neigh('A'))
-
-    # print('-'*20)
-
-    # print(graph.bfs())
-    # print(graph.dfs())
-    # print(graph)
+    graph.add_edge(0,1,2)
+    graph.add_edge(1,2,4)
+    graph.add_edge(2,3,3)
