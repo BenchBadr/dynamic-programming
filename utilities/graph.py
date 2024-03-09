@@ -86,7 +86,7 @@ class Graph:
                     visited[neighbor] = True
                     distances[neighbor] = distances[current_vertex] + 1
 
-        return distances[end]
+        return (distances[end])
 
     
 if __name__ == "__main__":
