@@ -15,13 +15,14 @@ def render_name(name):
     return ''.join((str(n) for n in name[:2]))+['R','L'][name[2]]
 
 def get_comb(n):
+    if n<=1:
+        return []
     comb = []
-    for i in range(n):
-        if (i,n-i) not in comb:
-            comb.append((i,n-i))
-        if (n-i,i) not in comb:
-            comb.append((n-i,i))
-    return comb
+    for i in range(n // 2 + 1):
+        comb.append((i, n - i))
+        if i != n - i:
+            comb.append((n - i, i))
+    return comb+get_comb(n-1)
 
 def get_neigh(state, amount=3, capacity=2):
     neigh = []
@@ -42,7 +43,7 @@ def get_neigh(state, amount=3, capacity=2):
 
     result = []
     for n in neigh:
-        if (n[1]>=n[2] or n[1]==0) and n[1]+n[2]<=amount*2 and n[1]+n[2]>=0 and n[1] <= amount and n[2] <=amount  and (amount-n[1] >= amount-n[2] or amount-n[1]==0):
+        if (n[1]>=n[2] or n[1]==0) and n[1]+n[2]>=0 and n[1] <= amount and n[2] <=amount  and (amount-n[1] >= amount-n[2] or amount-n[1]==0):
             modified_n = n + [int(not(state[2]))]
             result.append(modified_n)
     return result
@@ -58,20 +59,24 @@ def generate_graph(init, amount=3, capacity=2):
     if init==(amount,amount,0) or (init[1]>init[0] and init[0]!=0):
         return
     neigh = get_neigh(init, amount=amount, capacity=capacity)
-    # print(render_name(init),[render_name(n[1:]) for n in neigh])
     for n in neigh:
         if render_name(n[1:]) not in indexes:
             graph.add_edge(encode(init), encode(n[1:]), n[0])
-            generate_graph(n[1:],amount, capacity)
+            generate_graph(n[1:],amount=amount, capacity=capacity)
 
 
 
 
-generate_graph([3,3,1],3, 2)
 
-print([indexes[n] for n in graph.dfs()])
-print(graph.dijkstra(name_to_index('33L'),name_to_index('33R')))
+def test(n, cap):
+    generate_graph([n,n,1],n, cap)
+    p = [indexes[n] for n in graph.bfs()]
+    print(p, p.index(f"{n}{n}R"))
+    try:
+        print(graph.dijkstra(name_to_index(f'{n}{n}L'),name_to_index(f'{n}{n}R')))
+    except:
+        print(f"Error : No solution found (vertice {n}{n}R doesn't exist)")
+    return '-'*10
 
-
-# print([render_name(n[1:]) for n in get_neigh([3,3,1])])
-# print(get_neigh([0,2,0]))
+print(test(3,3))
+# print([render_name(n[1:]) for n in get_neigh([3,2,1],capacity=3)])

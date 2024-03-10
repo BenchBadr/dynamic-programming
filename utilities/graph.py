@@ -21,6 +21,15 @@ class Graph:
     def __str__(self):
         return str(self.adj_matrix)
     
+    def display(self, indexes):
+        s = ''
+        for i in range(len(self.adj_matrix)):
+            for j in range(len(self.adj_matrix)):
+                if self.adj_matrix[i][j]!=1 and i!=j:
+                    s+=(indexes[i]+' '+indexes[j]+'\n')
+        with open('graph.txt','w') as f:
+            f.write(s)
+    
     def get_degree(self, v):
         return sum([int(n!=0) for n in self.adj_matrix[v]])
     
